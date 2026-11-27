@@ -177,6 +177,8 @@ En los tres sistemas:
 uv python install 3.13
 ```
 
+Si uv ya estaba instalado, actualízalo por la misma vía por la que se instaló: `winget upgrade --id astral-sh.uv -e`, `brew upgrade uv` o, con el instalador oficial (`install.sh` / `install.ps1`), `uv self update`.
+
 **Verificar:**
 
 ```sh
@@ -227,7 +229,7 @@ docker run --rm hello-world
 
 ### 2.2 PostgreSQL por proyecto
 
-PostgreSQL **no se instala en el sistema**. Cada proyecto lo levanta en un contenedor. Plantilla `compose.yaml` para la raíz del repo:
+PostgreSQL **no se instala en el sistema**. Cada proyecto lo levanta en un contenedor. La plantilla oficial está en `postgres/` de este repositorio (`compose.yaml` + `.env.example`): cópiala a la raíz del proyecto. Su contenido:
 
 ```yaml
 services:
@@ -244,6 +246,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
+      timeout: 3s
       retries: 10
 
 volumes:
@@ -371,9 +374,12 @@ Crea un proyecto desechable en `Desarrollo/` (bórralo al terminar):
 
 ```sh
 cd ~/Desarrollo                     # 🪟: cd $env:USERPROFILE\Desarrollo
-uv init --app prueba-setup && cd prueba-setup
+uv init --app --no-package prueba-setup
+cd prueba-setup
 uv add fastapi "uvicorn[standard]"
 ```
+
+`--no-package` evita que uv cree un `src/` y un `[build-system]` que una app no necesita: desde uv 0.12, `uv init` y `uv init --app` los crean por defecto.
 
 Contenido de `main.py`:
 
@@ -386,7 +392,7 @@ def salud():
     return {"ok": True}
 ```
 
-Arranca el servidor con `uv run uvicorn main:app --port 8000` y, en otra terminal, comprueba que responde: `curl http://127.0.0.1:8000/salud` → `{"ok":true}`.
+Arranca el servidor con `uv run uvicorn main:app --port 8000` y, en otra terminal, comprueba que responde: `curl http://127.0.0.1:8000/salud` (🪟 `curl.exe ...`, porque en Windows PowerShell 5.1 `curl` es un alias de `Invoke-WebRequest`) → `{"ok":true}`.
 
 Lista de comprobación:
 

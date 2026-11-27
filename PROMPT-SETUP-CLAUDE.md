@@ -53,7 +53,9 @@ Detecta y anota:
 - Hardware: RAM física total en GB (en Windows, la suma de Win32_PhysicalMemory), hilos
   lógicos de CPU, disco libre en la unidad donde irá la carpeta Desarrollo, y si la
   virtualización está activa.
-- Windows: estado de WSL (wsl --status, wsl -l -v), si existe %USERPROFILE%\.wslconfig y su
+- Windows: estado de WSL (wsl --status, wsl -l -v; define antes $env:WSL_UTF8=1 en esa
+  misma llamada, porque si no la salida de wsl.exe llega en UTF-16 y se lee con espacios
+  entre letras), si existe %USERPROFILE%\.wslconfig y su
   contenido, si el alias de python de la Microsoft Store está activo, y si Documentos o
   Escritorio están redirigidos a OneDrive.
 - Versiones instaladas (o "no instalado") de: git, gh (y si hay sesión con gh auth status),

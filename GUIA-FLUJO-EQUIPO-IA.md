@@ -20,7 +20,7 @@ Este manual explica cómo trabaja el equipo en los repositorios de software e Io
 **Uso:**
 
 ```sh
-uv init mi-proyecto            # crea pyproject.toml, .python-version, README
+uv init --app --no-package mi-proyecto   # app sin src/ ni build-system (ver reglas abajo)
 uv add fastapi sqlalchemy      # dependencia de la app (actualiza pyproject.toml + uv.lock)
 uv add --dev pytest httpx      # dependencia solo de desarrollo/tests
 uv sync                        # instala exactamente lo que dice uv.lock
@@ -33,7 +33,7 @@ uv run uvicorn app.main:app --reload
 - **No edites a mano** las dependencias en `pyproject.toml`. Usa siempre `uv add` o `uv remove`.
 - **Commitea siempre `uv.lock`.** Nunca commitees `.venv/`.
 - **No necesitas activar el entorno.** `uv run <comando>` ya usa el `.venv` correcto.
-- **Apps que no se instalan.** Si el proyecto no es una librería instalable (una API o un servicio), no necesita `src/` ni `[build-system]`. En `tienda-acuarios` `uv init` generó un paquete en `src/` que la app no usaba. Al borrarlo, `uv` falló porque seguía intentando construirlo. La solución fue quitar `[build-system]` y `[project.scripts]` y añadir esto a `pyproject.toml`:
+- **Apps que no se instalan.** Si el proyecto no es una librería instalable (una API o un servicio), no necesita `src/` ni `[build-system]`. Créalo con `uv init --app --no-package`: desde uv 0.12, `uv init` (incluso con `--app`) genera un paquete en `src/`. Eso pasó en `tienda-acuarios`: `uv init` generó un paquete en `src/` que la app no usaba. Al borrarlo, `uv` falló porque seguía intentando construirlo. La solución fue quitar `[build-system]` y `[project.scripts]` y añadir esto a `pyproject.toml`:
 
   ```toml
   [tool.uv]
@@ -168,7 +168,8 @@ Desde Orca (eliminar worktree), o desde la CLI:
 ```sh
 orca worktree rm --worktree name:feat-carrito --delete-branch
 # o solo con git, desde fuera de esa carpeta:
-git worktree remove <ruta-del-worktree> && git branch -D feat/carrito-whatsapp
+git worktree remove <ruta-del-worktree>
+git branch -D feat/carrito-whatsapp
 ```
 
 ---
@@ -213,7 +214,7 @@ docker-compose.yml
 
 | Herramienta | Comando | Para qué |
 |---|---|---|
-| **uv** | `uv init <nombre>` | Crear un proyecto nuevo |
+| **uv** | `uv init --app --no-package <nombre>` | Crear un proyecto nuevo (app, sin `src/`) |
 | | `uv add <pkg>` / `uv add --dev <pkg>` | Añadir una dependencia de la app o de desarrollo |
 | | `uv remove <pkg>` | Quitar una dependencia |
 | | `uv sync` | Instalar exactamente lo que dice `uv.lock` |
